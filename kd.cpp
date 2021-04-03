@@ -9,6 +9,7 @@
 #include <vector>
 #include <iostream>
 #include <climits>
+#include <cmath>
 
 const int BUCKET_SIZE = 10;
 
@@ -21,11 +22,12 @@ private:
     node *rightChild;
     node *leftChild;
     int largest_number;
+    int index_of_largest_number;
 
 public:
     friend class kdTree;
     node();
-    node(int value);
+    void insert(int value);
 };
 
 node::node()
@@ -35,11 +37,12 @@ node::node()
     largest_number = INT_MIN;
 }
 
-node::node(int value)
+void node::insert(int value)
 {
     if (value > largest_number)
     {
         largest_number = value;
+        index_of_largest_number = values.size() - 1; 
     }
     values.push_back(value);
 }
@@ -50,31 +53,35 @@ class kdTree
 {
 private:
     std::vector<int> bucket;
-
 public:
     kdTree();
     //insert method
-    void buildTree(std::vector<node> listOfPoints);
+    void buildTree(std::vector<node*> listOfPoints);
     //Search method
-    int search(node *current, int probe);
+    int search(node* current, int probe);
     //Find Best Dimension
-    int findDimension(std::vector<node> listOfPoints);
+    int findDimension(std::vector<node*> listOfPoints);
     //Find the Pivot Value using Lomuto's
-    int findPivot(std::vector<node> listOfPoints, int dimension);
+    int findPivot(std::vector<node*> listOfPoints, int dimension);
 };
 
 //Find Max in list of nodes
-int kdTree::findDimension(std::vector<node> listOfPoints)
+int kdTree::findDimension(std::vector<node*> listOfPoints)
 {
-    int dim;
-    //Loop through all nodes and insert maxes into maxes
-    //When inserting into max array keep track of index of largest_max
-    //If max is bigger than largest_max then change index
+    int dim, highest_number = INT_MIN;
+    //Loop through all nodes 
+    for (int i = 0; i < listOfPoints.size(); i++)
+    //Keep track of highest number and record its index in values array
+    {
+        if(listOfPoints[i]->index_of_largest_number > highest_number){
+            dim = listOfPoints[i]->index_of_largest_number;
+        }
+    }
     //return index
     return dim;
 }
 
-int kdTree::findPivot(std::vector<node> listOfPoints, int dimension)
+int kdTree::findPivot(std::vector<node*> listOfPoints, int dimension)
 {
     int pivot;
     //Put all values at given dimension into vector
@@ -84,7 +91,7 @@ int kdTree::findPivot(std::vector<node> listOfPoints, int dimension)
     return pivot;
 }
 
-void kdTree::buildTree(std::vector<node> listOfPoints)
+void kdTree::buildTree(std::vector<node*> listOfPoints)
 {
     //Find best Dimension
     //Find pivot
@@ -92,19 +99,46 @@ void kdTree::buildTree(std::vector<node> listOfPoints)
     //Recuse until bucket is filled (size 10)
 }
 
+int kdTree::search(node *current, std::vector<node*>probes){
+    //Idk even know how I forgot this 
+}
+
 //Main
 int main(int argc, char const *argv[])
 {
     //Parameters
-    int numOfDim = std::stoi(argv[1]), numOfData = std::stoi(argv[2]), numOfProbes = std::stoi(argv[3]);
-    std::vector<node> holding_cells;
-    std::vector<node> probes;
+    int numOfDim = std::stoi(argv[1]), numOfData = std::stoi(argv[2]), numOfProbes = std::stoi(argv[3]), data;
+    std::vector<node*> holding_cells;
+    std::vector<node*> probes;
+    kdTree tree; 
 
     //Fill Up Nodes/Store in Holding
     //Use Nested For Loops
+    for (int i = 0; i < numOfData; i++)
+    {
+        node *temp = new node();
+        for (int i = 0; i < numOfDim; i++)
+        {
+            std::cin << data;
+            temp->insert(data);
+        }
+        holding_cells.push_back(temp);
+    }
+    
     //Build Trees with whats in holding
+    tree.buildTree(holding_cells);
     //Fill some nodes for Probing from input
+    for (int i = 0; i < numOfProbes; i++)
+    {
+        node *temp = new node();
+        for (int i = 0; i < numOfDim; i++)
+        {
+            std::cin << data;
+            temp->insert(data);
+        }
+        holding_cells.push_back(temp);
+    }
     //Do the Search
-
+    tree.search(probes);
     return 0;
 }
